@@ -3,7 +3,8 @@ const asyncHandler = require("express-async-handler");
 
 // Create Product
 const createProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, image, category, countInStock } = req.body;
+  const { name, description, price, category, countInStock } = req.body;
+  const image = req.file ? req.file.path : "";
 
   const product = await Product.create({
     name,

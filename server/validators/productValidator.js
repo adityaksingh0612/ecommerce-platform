@@ -26,19 +26,21 @@ const validateProduct = [
     .withMessage("Stock cannot be negative"),
 
   (req, res, next) => {
-    const errors = validationResult(req);
+  const errors = validationResult(req);
 
+  if (!errors.isEmpty()) {
     return res.status(400).json({
-  success: false,
-  message: "Validation failed",
-  errors: errors.array().map((err) => ({
-    field: err.path,
-    message: err.msg,
-    })),
+      success: false,
+      message: "Validation failed",
+      errors: errors.array().map((err) => ({
+        field: err.path,
+        message: err.msg,
+      })),
     });
+  }
 
-    next();
-  },
+  next();
+},
 ];
 
 module.exports = {

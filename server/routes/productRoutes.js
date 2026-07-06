@@ -11,11 +11,18 @@ const {
 const { protect } = require("../middleware/authMiddleware");
 const { admin } = require("../middleware/adminMiddleware");
 const { validateProduct } = require("../validators/productValidator");
+const upload = require("../middleware/uploadMiddleware");
 
 const router = express.Router();
 
 router.route("/")
-    .post(protect, admin, validateProduct, createProduct)
+    .post(
+        protect,
+        admin,
+        upload.single("image"),
+        validateProduct,
+        createProduct
+    )
     .get(getProducts);
 
 router.route("/:id")
