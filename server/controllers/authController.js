@@ -1,56 +1,68 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-//register
-const registerUser = async (req, res) => {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-    return res.status(400).json({
-        message: "Please provide all fields",
-    });
-    }
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-    return res.status(400).json({
-        message: "User already exists",
-    });
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
+const asyncHandler = require("express-async-handler");
+
+// Register User
+const registerUser = asyncHandler(async (req, res) => {
+  const { name, email, password } = req.body;
+
+  const userExists = await User.findOne({ email });
+
+  if (userExists) {
+    res.status(400);
+    throw new Error("User already exists");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const user = await User.create({
     name,
     email,
     password: hashedPassword,
-    });
-    return res.status(201).json({
-    message: "User registered successfully",
-    user,
-    });
-};
-//login
-const loginUser=async(req,res)=>{
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) {
-    return res.status(400).json({
-        message: "User does not exist",
-    });
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if(!isMatch){
-        return res.status(400).json({
-        message: "Incorrect Password",
-        });
-    }
-    const token = jwt.sign(
+  });
+
+  res.status(201).json({
+  message: "User registered successfully",
+  user: {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  },
+  });
+});
+
+// Login User
+const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User does not exist");
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    res.status(400);
+    throw new Error("Incorrect Password");
+  }
+
+  const token = jwt.sign(
     { id: user._id },
     process.env.JWT_SECRET
-    );
-    return res.status(200).json({
+  );
+
+  res.status(200).json({
     message: "Login successful",
     token,
-    });
-};
+  });
+});
+
 module.exports = {
-    registerUser,
-    loginUser,
+  registerUser,
+  loginUser,
 };
