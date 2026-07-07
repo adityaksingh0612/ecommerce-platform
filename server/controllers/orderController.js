@@ -8,6 +8,15 @@ const placeOrder = asyncHandler(async (req, res) => {
     const cartItems = await Cart.find({
       user: req.user._id,
     }).populate("product");
+    // Check stock availability
+    for (const item of cartItems) {
+      if (item.quantity > item.product.countInStock) {
+        res.status(400);
+        throw new Error(
+          `${item.product.name} has only ${item.product.countInStock} items in stock`
+        );
+      }
+    }
 
     // Check if cart is empty
     if (cartItems.length === 0) {
@@ -32,6 +41,11 @@ const placeOrder = asyncHandler(async (req, res) => {
       orderItems,
       totalPrice,
     });
+    // Update product stock
+    for (const item of cartItems) {
+      item.product.countInStock -= item.quantity;
+      await item.product.save();
+    }
 
     // Clear cart
     await Cart.deleteMany({

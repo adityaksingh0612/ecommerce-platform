@@ -20,16 +20,28 @@ const addToCart = asyncHandler(async (req, res) => {
       product: productId,
     });
 
-    if (cartItem) {
-      cartItem.quantity += quantity ?? 1;
-      await cartItem.save();
+  if (cartItem) {
+    const newQuantity = cartItem.quantity + (quantity ?? 1);
 
-      return res.status(200).json({
-        message: "Cart updated successfully",
-        cartItem,
-      });
+    if (newQuantity > product.countInStock) {
+      res.status(400);
+      throw new Error("Cannot add more than available stock");
     }
 
+    cartItem.quantity = newQuantity;
+    await cartItem.save();
+
+    return res.status(200).json({
+      message: "Cart updated successfully",
+      cartItem,
+    });
+  }
+    const requestedQuantity = quantity ?? 1;
+
+    if (requestedQuantity > product.countInStock) {
+      res.status(400);
+      throw new Error("Cannot add more than available stock");
+    }
     // Create new cart item
     cartItem = await Cart.create({
       user: req.user._id,
