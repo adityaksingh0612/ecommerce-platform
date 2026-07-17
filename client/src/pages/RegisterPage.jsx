@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import toast from "react-hot-toast";
 
 function RegisterPage() {
   const [name, setName] = useState("");
@@ -10,6 +11,7 @@ function RegisterPage() {
   const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const registerHandler = async (e) => {
   e.preventDefault();
@@ -30,14 +32,11 @@ function RegisterPage() {
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
-    alert("Registration Successful");
+    toast.success("Registration successful");
+    navigate("/");
   } catch (error) {
-  console.log("FULL ERROR:", error);
-  console.log("RESPONSE:", error.response);
-  console.log("DATA:", error.response?.data);
-  console.log("STATUS:", error.response?.status);
 
-  alert(error.response?.data?.message || "Registration Failed");
+  toast.error(error.response?.data?.message || "Registration failed");
 }
 };
 

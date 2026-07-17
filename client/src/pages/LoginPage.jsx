@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { setCredentials, logout } from "../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import toast from "react-hot-toast";
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,27 +30,20 @@ function LoginPage() {
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
-    alert("Login Successful");
+    toast.success("Login successful");
+    navigate("/");
   } catch (error) {
-    alert(error.response?.data?.message || "Login Failed");
+    toast.error(error.response?.data?.message || "Login failed");
   }
   };
   const logoutHandler = () => {
-  console.log("Logout Handler Started");
 
   dispatch(logout());
-  console.log("Redux Cleared");
 
   localStorage.removeItem("user");
   localStorage.removeItem("token");
-  console.log("Local Storage Cleared");
-
-  console.log("User:", localStorage.getItem("user"));
-  console.log("Token:", localStorage.getItem("token"));
 
   navigate("/login");
-
-  console.log("Navigate Called");
   };
 
   return (
