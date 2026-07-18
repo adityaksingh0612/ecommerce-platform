@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const razorpay = require("../config/razorpay");
 const Order = require("../models/Order");
+const Cart = require("../models/Cart");
 const crypto = require("crypto");
 const createRazorpayOrder = asyncHandler(async (req, res) => {
     const { orderId } = req.body;
@@ -50,15 +51,33 @@ if (order.isPaid) {
 }
 
 order.isPaid = true;
+order.status = "Processing";
 order.paidAt = Date.now();
 order.paymentId = razorpay_payment_id;
 
+// Get user's cart
+const cartItems = await Cart.find({
+  user: order.user,
+}).populate("product");
+
+// Update product stock
+for (const item of cartItems) {
+  item.product.countInStock -= item.quantity;
+  await item.product.save();
+}
+
+// Clear cart
+await Cart.deleteMany({
+  user: order.user,
+});
+
 await order.save();
-  res.status(200).json({
+
+res.status(200).json({
   success: true,
   message: "Payment verified successfully",
   order,
-  });
+});
 });
 module.exports = {
   createRazorpayOrder,

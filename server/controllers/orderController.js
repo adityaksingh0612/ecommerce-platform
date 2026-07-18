@@ -21,7 +21,7 @@ const placeOrder = asyncHandler(async (req, res) => {
     // Check if cart is empty
     if (cartItems.length === 0) {
       res.status(400);
-      throw new error("Cart is empty");
+      throw new Error("Cart is empty");
     }
 
     // Calculate total price
@@ -41,16 +41,6 @@ const placeOrder = asyncHandler(async (req, res) => {
       orderItems,
       totalPrice,
     });
-    // Update product stock
-    for (const item of cartItems) {
-      item.product.countInStock -= item.quantity;
-      await item.product.save();
-    }
-
-    // Clear cart
-    await Cart.deleteMany({
-      user: req.user._id,
-    });
 
     res.status(201).json({
       message: "Order placed successfully",
@@ -61,6 +51,7 @@ const placeOrder = asyncHandler(async (req, res) => {
 const getMyOrders = asyncHandler(async (req, res) => {
     const orders = await Order.find({
       user: req.user._id,
+      isPaid: true,
     }).populate("orderItems.product");
 
     res.status(200).json(orders);
