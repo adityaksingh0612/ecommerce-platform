@@ -46,13 +46,19 @@ function HomePage({ search }) {
           Discover the latest smartphones at unbeatable prices.
         </p>
 
-        <button className="mt-8 bg-white text-blue-700 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition">
+        <button
+          onClick={() =>
+            document
+              .getElementById("products")
+              ?.scrollIntoView({ behavior: "smooth" })
+          }
+          className="mt-8 bg-white text-blue-700 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition"
+        >
           Shop Now
         </button>
 
       </div>
     </div>
-    <div className="max-w-7xl mx-auto px-8 py-12">
 
     <h2 className="text-4xl font-bold text-gray-800 mb-8">
       Featured Products
@@ -65,6 +71,10 @@ function HomePage({ search }) {
       product={product}
     />
   ))}
+  <div
+    id="products"
+    className="max-w-7xl mx-auto px-8 py-12"
+  >
   </div>
   {filteredProducts.length === 0 && (
     <div className="text-center py-12">

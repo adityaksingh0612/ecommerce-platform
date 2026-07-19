@@ -195,3 +195,33 @@ GitHub: https://github.com/adityaksingh0612
 ## 📄 License
 
 This project is developed for educational and portfolio purposes.
+
+## 📸 Screenshots
+
+### Home Page
+
+![Home Page](screenshots/HomePage.png)
+
+### Product Details
+
+![Product Details](screenshots/ProductDetails.png)
+
+### Shopping Cart
+
+![Shopping Cart](screenshots/MyCart.png)
+
+### Checkout
+
+![Checkout](screenshots/Checkout.png)
+
+### My Orders
+
+![My Orders](screenshots/MyOrders.png)
+
+### Order Details
+
+![Order Details](screenshots/OrderDetails.png)
+
+### Admin Dashboard
+
+![Admin Dashboard](screenshots/AdminDashboard.png)
